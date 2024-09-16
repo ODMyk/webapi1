@@ -7,8 +7,23 @@ import { UpdateCompanyDto } from './dtos/company-update.dto';
 export class CompaniesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getAllCompanies() {
-    return await this.prisma.company.findMany();
+  async getAllCompanies(page: number, limit: number) {
+    const skip = (page - 1) * limit;
+
+    const companies = await this.prisma.company.findMany({
+      skip,
+      take: limit,
+    });
+
+    const totalCompanies = await this.prisma.company.count();
+
+    return {
+      data: companies,
+      total: totalCompanies,
+      page,
+      limit,
+      totalPages: Math.ceil(totalCompanies / limit),
+    };
   }
 
   async getCompanyById(id: number) {

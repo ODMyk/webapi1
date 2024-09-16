@@ -11,6 +11,8 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
+  UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { CompaniesService } from './companies.service';
@@ -18,14 +20,17 @@ import { CreateCompanyDto } from './dtos/company-create.dto';
 import { UpdateCompanyDto } from './dtos/company-update.dto';
 import { ChangeCompanyLogoDto } from './dtos/company-change-logo.dto';
 import { ChangeCompanyOwnerDto } from './dtos/company-change-owner.dto';
+import { PaginationQueryDto } from 'src/common/dtos/query-pagination.dto';
 
 @Controller('companies')
 export class CompaniesController {
   constructor(private readonly service: CompaniesService) {}
 
   @Get()
-  async allCompanies() {
-    return await this.service.getAllCompanies();
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async allCompanies(@Query() query: PaginationQueryDto) {
+    const { page, limit } = query;
+    return await this.service.getAllCompanies(page, limit);
   }
 
   @Get(':id')

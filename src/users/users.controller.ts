@@ -11,29 +11,40 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
+  UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
+import { PaginationQueryDto } from 'src/common/dtos/query-pagination.dto';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly service: UsersService) {}
 
   @Get()
-  async allUsers() {
-    return await this.service.getAllUsers();
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async allUsers(@Query() query: PaginationQueryDto) {
+    const { page, limit } = query;
+    return await this.service.getAllUsers(page, limit);
   }
 
   @Get(':id')
-  async userById(@Param('id', ParseIntPipe) id: number) {
+  async getUser(@Param('id', ParseIntPipe) id: number) {
     const user = await this.service.getUserById(id);
+
     if (!user) {
       throw new NotFoundException(`User with id ${id} was not found`);
     }
 
     return user;
+  }
+
+  @Get('/byname/:name')
+  async getUsersByName(@Param('name') name: string) {
+    return await this.service.getUsersByName(name);
   }
 
   @Post()
@@ -52,8 +63,8 @@ export class UsersController {
     @Param('id', ParseIntPipe) id: number,
     @Body(new ValidationPipe()) dto: UpdateUserDto,
   ) {
-    const { count } = await this.service.updateUser(id, dto);
-    if (!count) {
+    const ok = await this.service.updateUser(id, dto);
+    if (!ok) {
       throw new NotFoundException(`User with id ${id} was not found`);
     }
   }
@@ -61,8 +72,8 @@ export class UsersController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteUserById(@Param('id', ParseIntPipe) id: number) {
-    const { count } = await this.service.deleteUser(id);
-    if (!count) {
+    const ok = await this.service.deleteUser(id);
+    if (!ok) {
       throw new NotFoundException(`User with id ${id} was not found`);
     }
   }
