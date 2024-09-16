@@ -11,8 +11,6 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  Query,
-  UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { CompaniesService } from './companies.service';
@@ -20,17 +18,14 @@ import { CreateCompanyDto } from './dtos/company-create.dto';
 import { UpdateCompanyDto } from './dtos/company-update.dto';
 import { ChangeCompanyLogoDto } from './dtos/company-change-logo.dto';
 import { ChangeCompanyOwnerDto } from './dtos/company-change-owner.dto';
-import { PaginationQueryDto } from 'src/common/dtos/query-pagination.dto';
 
 @Controller('companies')
 export class CompaniesController {
   constructor(private readonly service: CompaniesService) {}
 
   @Get()
-  @UsePipes(new ValidationPipe({ transform: true }))
-  async allCompanies(@Query() query: PaginationQueryDto) {
-    const { page, limit } = query;
-    return await this.service.getAllCompanies(page, limit);
+  async allCompanies() {
+    return await this.service.getAllCompanies();
   }
 
   @Get(':id')
@@ -63,8 +58,8 @@ export class CompaniesController {
     @Param('id', ParseIntPipe) id: number,
     @Body(new ValidationPipe()) dto: UpdateCompanyDto,
   ) {
-    const { count } = await this.service.updateCompany(id, dto);
-    if (!count) {
+    const ok = await this.service.updateCompany(id, dto);
+    if (!ok) {
       throw new NotFoundException(`Company with id ${id} was not found`);
     }
   }
@@ -75,8 +70,8 @@ export class CompaniesController {
     @Param('id', ParseIntPipe) id: number,
     @Body(new ValidationPipe()) { logo }: ChangeCompanyLogoDto,
   ) {
-    const { count } = await this.service.updateCompanyLogo(id, logo);
-    if (!count) {
+    const ok = await this.service.updateCompanyLogo(id, logo);
+    if (!ok) {
       throw new NotFoundException(`Company with id ${id} was not found`);
     }
   }
@@ -97,8 +92,8 @@ export class CompaniesController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteCompanyById(@Param('id', ParseIntPipe) id: number) {
-    const { count } = await this.service.deleteCompany(id);
-    if (!count) {
+    const ok = await this.service.deleteCompany(id);
+    if (!ok) {
       throw new NotFoundException(`Company with id ${id} was not found`);
     }
   }
