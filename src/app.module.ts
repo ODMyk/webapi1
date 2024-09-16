@@ -6,8 +6,8 @@ import { CompaniesModule } from './companies/companies.module';
 import { ContractsModule } from './contracts/contracts.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ElasticSearchModule } from './elastic-search/elastic-search.module';
-import { CacheModule } from '@nestjs/cache-manager';
-import * as redisStore from 'cache-manager-ioredis';
+import { KafkaModule } from './kafka/kafka.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
@@ -16,12 +16,8 @@ import * as redisStore from 'cache-manager-ioredis';
     ContractsModule,
     PrismaModule,
     ElasticSearchModule,
-    CacheModule.register({
-      store: redisStore,
-      host: 'redis',
-      port: 6379,
-      ttl: 600,
-    }),
+    KafkaModule,
+    AnalyticsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
