@@ -48,7 +48,6 @@ export class EmailService implements OnModuleInit {
   async sendEmail(to: string, subject: string, text: string) {
     try {
       await this.transporter.sendMail({
-        from: 'ostapenko.dmytro@knu.ua',
         to,
         subject,
         text,
