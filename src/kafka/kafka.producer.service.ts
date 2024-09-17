@@ -10,7 +10,7 @@ import { Producer, Kafka, ProducerRecord } from 'kafkajs';
 export class KafkaProducerService
   implements OnApplicationShutdown, OnModuleInit
 {
-  private readonly kafka = new Kafka({ brokers: ['localhost:9092'] });
+  private readonly kafka = new Kafka({ brokers: [process.env.KAFKA_URL] });
   private readonly producer: Producer = this.kafka.producer();
 
   async onModuleInit() {

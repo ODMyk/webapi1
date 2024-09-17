@@ -8,6 +8,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ElasticSearchModule } from './elastic-search/elastic-search.module';
 import { KafkaModule } from './kafka/kafka.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { GoogleAnalyticsService } from './google-analytics/google-analytics.service';
+import { GoogleAnalyticsModule } from './google-analytics/google-analytics.module';
 
 @Module({
   imports: [
@@ -18,8 +20,9 @@ import { AnalyticsModule } from './analytics/analytics.module';
     ElasticSearchModule,
     KafkaModule,
     AnalyticsModule,
+    GoogleAnalyticsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, GoogleAnalyticsService],
 })
 export class AppModule {}

@@ -8,7 +8,7 @@ import {
 
 @Injectable()
 export class KafkaConsumerService implements OnApplicationShutdown {
-  private readonly kafka = new Kafka({ brokers: ['localhost:9092'] });
+  private readonly kafka = new Kafka({ brokers: [process.env.KAFKA_URL] });
   private readonly consumers: Consumer[] = [];
 
   async consume(topic: ConsumerSubscribeTopics, config: ConsumerRunConfig) {

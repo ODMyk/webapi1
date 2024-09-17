@@ -3,12 +3,14 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCompanyDto } from './dtos/company-create.dto';
 import { UpdateCompanyDto } from './dtos/company-update.dto';
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
+import { GoogleAnalyticsService } from 'src/google-analytics/google-analytics.service';
 
 @Injectable()
 export class CompaniesService {
   constructor(
     private readonly prisma: PrismaService,
     @Inject(CACHE_MANAGER) private cache: Cache,
+    private readonly gaService: GoogleAnalyticsService,
   ) {}
 
   async getAllCompanies() {
@@ -46,6 +48,7 @@ export class CompaniesService {
 
     const company = await this.prisma.company.create({ data: dto });
     await this.cache.set(company.id.toString(), company);
+    await this.gaService.sendEvent('Company_Created', company);
 
     return company;
   }

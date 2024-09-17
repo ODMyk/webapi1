@@ -4,12 +4,14 @@ import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
 import { UserDto } from './dtos/user.dto';
+import { GoogleAnalyticsService } from 'src/google-analytics/google-analytics.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly elastic: ElasticsearchService,
+    private readonly gaService: GoogleAnalyticsService,
   ) {}
 
   async getAllUsers(page: number, limit: number) {
@@ -43,6 +45,8 @@ export class UsersService {
       id: user.id.toString(),
       body: user,
     });
+
+    await this.gaService.sendEvent('User_Created', { ...dto, id: user.id });
 
     return user;
   }

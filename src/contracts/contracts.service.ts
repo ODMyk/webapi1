@@ -3,10 +3,14 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { GetContractDto } from './dtos/get-contract.dto';
 import { CreateContractDto } from './dtos/create-contract.dto';
 import { UpdateContractDto } from './dtos/contract-update.dto';
+import { GoogleAnalyticsService } from 'src/google-analytics/google-analytics.service';
 
 @Injectable()
 export class ContractsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly gaService: GoogleAnalyticsService,
+  ) {}
 
   async getAllContracts(page: number, limit: number) {
     const skip = (page - 1) * limit;
@@ -31,8 +35,10 @@ export class ContractsService {
     return await this.prisma.contract.findFirst({ where: dto });
   }
 
-  async createContract(contract: CreateContractDto) {
-    return await this.prisma.contract.create({ data: contract });
+  async createContract(dto: CreateContractDto) {
+    const contract = await this.prisma.contract.create({ data: dto });
+    await this.gaService.sendEvent('Contract_Created', contract);
+    return contract;
   }
 
   async updateContract(contract: UpdateContractDto) {

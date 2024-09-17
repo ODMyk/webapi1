@@ -48,12 +48,12 @@ export class ContractsController {
   async createContract(
     @Body(new ValidationPipe({ transform: true })) dto: CreateContractDto,
   ) {
-    const Contract = await this.service.createContract(dto);
-    if (!Contract) {
+    const contract = await this.service.createContract(dto);
+    if (!contract) {
       throw new InternalServerErrorException('UNEXPECTED ERROR');
     }
 
-    return Contract;
+    return contract;
   }
 
   @Patch()
