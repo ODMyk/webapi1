@@ -4,7 +4,7 @@ import { ElasticsearchModule } from '@nestjs/elasticsearch';
 @Module({
   imports: [
     ElasticsearchModule.register({
-      node: process.env.REDIS_URL,
+      node: process.env.ELASTIC_URL,
     }),
   ],
   exports: [ElasticsearchModule],
